@@ -1,6 +1,7 @@
-import { Grid, defineHex } from 'honeycomb-grid'
+import { Grid, defineHex, ring } from 'honeycomb-grid'
 import { tileColours, resources } from './tiles';
 import { shuffleArray } from './util';
+import { Settlement } from './settlement';
 
 const tileDimensions = 30;
 
@@ -17,7 +18,7 @@ const randomTile = (tiles, numbers) => {
     const type = tiles[randomIndex];
     const hex = new Tile();
     hex.colour = tileColours[type];
-    hex.resources = resources[type];
+    hex.resource = resources[type];
     hex.type = type;
     hex.number = type === 'Desert' ? null : Number(numbers[Math.floor(Math.random() * numbers.length)]);
     hex.isBlocked = false;
@@ -88,4 +89,43 @@ const newBoard = () => {
     return grid;
 }
 
-export { newBoard };
+
+const newSettlementFromClick = (grid, x, y, player) => {
+    const clickedPoint = { x, y };
+    const hex = grid.pointToHex(clickedPoint, { allowOutside: false });
+    if (!hex) return null;
+
+    // get the nearest point and save the distance
+    let minDistance = Infinity;
+    let point = null;
+    for (const p of hex.corners) {
+      const distance = Math.sqrt(Math.pow(x - p.x, 2) + Math.pow(y - p.y, 2));
+      if (distance < minDistance) {
+        minDistance = distance;
+        point = p;
+      }
+    }
+
+    if (minDistance > 6) return null;
+
+    const nextToSettlement = [hex];
+
+    const adjacent = grid.traverse(ring({ center: [hex.q, hex.r], start: [hex.q, hex.r + 1] }));
+    for (const tile of adjacent) {
+        const cornerExists = tile.corners.some(corner => {
+            const dx = corner.x - point.x;
+            const dy = corner.y - point.y;
+            const distance = Math.sqrt(dx*dx + dy*dy);
+            
+            return distance <= 1;
+        });
+        
+        if (cornerExists) {
+            nextToSettlement.push(tile);
+        }
+    }
+
+    return new Settlement(point.x, point.y, nextToSettlement, player);
+}
+
+export { Tile, newBoard, newSettlementFromClick };

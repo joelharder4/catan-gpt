@@ -1,9 +1,9 @@
 class Settlement {
-    constructor(x, y, adjacentHexes, player = null) {
+    constructor(x, y, adjacentHexes, player) {
         this.x = x;
         this.y = y;
         this.player = player;
-        this.colour = player ? player.colour : '#000000';
+        this.colour = player.colour;
 
         this.adjacentHexes = adjacentHexes;
     }
@@ -12,7 +12,7 @@ class Settlement {
         const resources = [];
         this.adjacentHexes.forEach(hex => {
             if (hex.number === numRolled) {
-                resources.push(hex.type);
+                resources.push(hex.resource);
             }
         });
         return resources;

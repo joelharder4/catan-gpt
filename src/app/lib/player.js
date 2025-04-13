@@ -1,23 +1,16 @@
-class Player {
-    constructor(name, colour, vp) {
-        this.name = name;
-        this.colour = colour;
-        this.vp = vp; // Victory Points
-        this.developmentCards = {
-            knight: 0,
-            monopoly: 0,
-            roadBuilding: 0,
-            yearOfPlenty: 0,
-            victoryPoint: 0
-        };
-        this.resources = {
-            wood: 0,
-            brick: 0,
-            sheep: 0,
-            wheat: 0,
-            ore: 0
-        };
-    }
+export async function newPlayer(name, colour) {
+    const res = await fetch('/api/players', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({name: name, colour: colour})
+    });
+    return res.status;
 }
 
-export { Player };
+export async function getPlayers() {
+    const res = await fetch('/api/players');
+    const data = await res.json();
+    return data;
+}

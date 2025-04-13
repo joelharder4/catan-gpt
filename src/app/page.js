@@ -2,9 +2,9 @@
 import { useState, useRef, useEffect } from 'react';
 import RenderBoard from "./ui/RenderBoard";
 import { newBoard, newSettlementFromClick } from "./lib/hex-board";
-import { Player } from "./lib/player";
 import { Settlement } from "./lib/settlement";
 import { Button } from '@mui/material';
+import { getPlayers } from './lib/player';
 
 const Home = () => {
   const [grid, setGrid] = useState(newBoard());
@@ -16,15 +16,15 @@ const Home = () => {
   const svgDrawRef = useRef(null);
   const svgContainerRef = useRef(null);
 
-
   useEffect(() => {
-    setPlayers([
-      new Player("Black", "#222222"),
-      new Player("Blue (Based)", "#1b63cf"),
-      new Player("White (Bot)", "#f7f7f7"),
-      new Player("Orange (Grr)", "#db8121"),
-      new Player("Red", "#bf2121"),
-    ]);
+    // setPlayers([
+    //   new Player("Black", "#222222"),
+    //   new Player("Blue (Based)", "#1b63cf"),
+    //   new Player("White (Bot)", "#f7f7f7"),
+    //   new Player("Orange (Grr)", "#db8121"),
+    //   new Player("Red", "#bf2121"),
+    // ]);
+    getPlayers().then((data) => {setPlayers(data)})
   }, []);
 
   const handleClick = (e) => {

@@ -6,23 +6,29 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db-push": "npx drizzle-kit push",
+    "db-migrate": "npx drizzle-kit generate && npx drizzle-kit migrate"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.0.2",
+    "@neondatabase/serverless": "^1.1.0",
     "@svgdotjs/svg.js": "^3.2.4",
+    "antd": "^6.3.7",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
     "honeycomb-grid": "^4.1.5",
-    "mongodb": "^6.15.0",
-    "mongoose": "^8.13.2",
-    "next": "15.2.4",
+    "next": "^15.5.18",
+    "pg": "^8.20.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "tailwindcss": "^4"

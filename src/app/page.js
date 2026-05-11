@@ -1,10 +1,10 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import RenderBoard from "./ui/RenderBoard";
-import { newBoard, newSettlementFromClick } from "./lib/hex-board";
-import { Settlement } from "./lib/settlement";
+import { newBoard, newSettlementFromClick } from "../lib/hex-board";
+import { Settlement } from "../lib/settlement";
 import { Button } from '@mui/material';
-import { getPlayers } from './lib/player';
+import { newPlayer, deletePlayers, getPlayers } from '../lib/player';
 
 const Home = () => {
   const [grid, setGrid] = useState(newBoard());
@@ -17,14 +17,20 @@ const Home = () => {
   const svgContainerRef = useRef(null);
 
   useEffect(() => {
-    // setPlayers([
-    //   new Player("Black", "#222222"),
-    //   new Player("Blue (Based)", "#1b63cf"),
-    //   new Player("White (Bot)", "#f7f7f7"),
-    //   new Player("Orange (Grr)", "#db8121"),
-    //   new Player("Red", "#bf2121"),
-    // ]);
-    getPlayers().then((data) => {setPlayers(data)})
+    async function initialize() {
+      setGrid(newBoard());
+      setBuildings([]);
+
+      await deletePlayers().then((res) => {console.log(res)});
+      await newPlayer("Blue (Based)", "#1b63cf");
+      await newPlayer("Black", "#222222");
+      await newPlayer("White (Bot)", "#f7f7f7");
+      await newPlayer("Orange (Grr)", "#db8121");
+      await newPlayer("Red", "#bf2121");
+      await getPlayers().then((res) => {console.log(res); setPlayers(res.data)})
+    }
+    
+    initialize();
   }, []);
 
   const handleClick = (e) => {
@@ -102,7 +108,7 @@ const Home = () => {
       <div className='flex flex-row items-center justify-center gap-4'>
         <Button
           variant='contained'
-          onClick={() => {setGrid(newBoard())}}
+          onClick={() => {setGrid(newBoard()); setBuildings([])}}
         >
           New Board
         </Button>

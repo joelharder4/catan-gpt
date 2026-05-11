@@ -1,3 +1,5 @@
+
+
 export async function newPlayer(name, colour) {
     const res = await fetch('/api/players', {
       method: 'POST',
@@ -11,6 +13,15 @@ export async function newPlayer(name, colour) {
 
 export async function getPlayers() {
     const res = await fetch('/api/players');
-    const data = await res.json();
-    return data;
+    return await res.json();
+}
+
+export async function deletePlayers() {
+    const res = await fetch('/api/players', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return res.status;
 }

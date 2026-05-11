@@ -22,6 +22,7 @@ export async function POST(req) {
   }
 }
 
+
 export async function GET() {
   
   const sampleData = [
@@ -34,6 +35,7 @@ export async function GET() {
 
   return NextResponse.json({ data: sampleData });
 }
+
 
 export async function DELETE(req) {
   let name, colour;

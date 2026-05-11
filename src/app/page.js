@@ -5,6 +5,7 @@ import { newBoard, newSettlementFromClick } from "../lib/hex-board";
 import { Settlement } from "../lib/settlement";
 import { Button } from '@mui/material';
 import { newPlayer, deletePlayers, getPlayers } from '../lib/player';
+import { newMatch } from '@/lib/match';
 
 const Home = () => {
   const [grid, setGrid] = useState(newBoard());
@@ -21,6 +22,7 @@ const Home = () => {
       setGrid(newBoard());
       setBuildings([]);
 
+      const match = await newMatch("Catan");
       await deletePlayers().then((res) => {console.log(res)});
       await newPlayer("Blue (Based)", "#1b63cf");
       await newPlayer("Black", "#222222");

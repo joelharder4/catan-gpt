@@ -1,6 +1,6 @@
 
 export async function newMatch(gameName = "Catan") {
-    const res = await fetch('/api/match', {
+    const res = await fetch('/api/matches', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

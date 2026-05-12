@@ -4,7 +4,7 @@ import RenderBoard from "./ui/RenderBoard";
 import { newBoard, newSettlementFromClick } from "../lib/hex-board";
 import { Settlement } from "../lib/settlement";
 import { Button } from '@mui/material';
-import { newPlayer, deletePlayers, getPlayers } from '../lib/player';
+import { newUser, deleteUser, getUser } from '../lib/users';
 import { newMatch } from '@/lib/match';
 
 const Home = () => {
@@ -23,13 +23,19 @@ const Home = () => {
       setBuildings([]);
 
       const match = await newMatch("Catan");
-      await deletePlayers().then((res) => {console.log(res)});
-      await newPlayer("Blue (Based)", "#1b63cf");
-      await newPlayer("Black", "#222222");
-      await newPlayer("White (Bot)", "#f7f7f7");
-      await newPlayer("Orange (Grr)", "#db8121");
-      await newPlayer("Red", "#bf2121");
-      await getPlayers().then((res) => {console.log(res); setPlayers(res.data)})
+
+      const res = await fetch('/api/matches', {
+        method: 'GET',
+      });
+      console.log(await res.json());
+
+      await deleteUser().then((res) => {console.log(res)});
+      await newUser("Blue (Based)", "#1b63cf");
+      await newUser("Black", "#222222");
+      await newUser("White (Bot)", "#f7f7f7");
+      await newUser("Orange (Grr)", "#db8121");
+      await newUser("Red", "#bf2121");
+      await getUser().then((res) => {console.log(res); setPlayers(res.data)})
     }
     
     initialize();

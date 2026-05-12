@@ -1,6 +1,6 @@
 
-export async function newPlayer(name, colour) {
-    const res = await fetch('/api/players', {
+export async function newUser(name, colour) {
+    const res = await fetch('/api/users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -11,14 +11,14 @@ export async function newPlayer(name, colour) {
 }
 
 
-export async function getPlayers() {
-    const res = await fetch('/api/players');
+export async function getUser() {
+    const res = await fetch('/api/users');
     return await res.json();
 }
 
 
-export async function deletePlayers() {
-    const res = await fetch('/api/players', {
+export async function deleteUser() {
+    const res = await fetch('/api/users', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'

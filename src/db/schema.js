@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, serial, text, timestamp, integer, varchar, boolean, check, uniqueIndex, char } from 'drizzle-orm/pg-core';
+import { pgTable, pgEnum, serial, text, timestamp, integer, varchar, boolean, check, uniqueIndex, char, jsonb } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
 export const rolesEnum = pgEnum("roles", ["user", "admin"]);
@@ -47,7 +47,7 @@ export const team = pgTable("team", {
   colour: char({ length: 7 }).default("#000000"),
 });
 
-export const matchPlayer = pgTable("match_players", {
+export const matchPlayer = pgTable("match_player", {
   id: serial().primaryKey(),
   matchId: integer("match_id").references(() => match.id).notNull(),
   teamId: integer("team_id").references(() => team.id),
@@ -56,6 +56,7 @@ export const matchPlayer = pgTable("match_players", {
   userId: integer("user_id").references(() => user.id),
   
   score: integer().default(0),
+  state: jsonb().default({}),
   isWinner: boolean("is_winner").default(false).notNull(),
 }, (table) => [
   // validates that the player is either a user XOR a bot

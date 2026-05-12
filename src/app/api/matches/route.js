@@ -1,13 +1,17 @@
 import { NextResponse } from 'next/server';
 import { db } from "@/db";
 import { match, game } from '@/db/schema';
-import { eq, like } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
+import { catanStateSchema } from '@/lib/schema';
 
 export async function POST(req) {
-  const {gameName} = await req.json();
-  if (!gameName) {
-    return NextResponse.json({ error: 'Did not provide required data' }, { status: 400 });
-  }
+  const { gameName } = await req.json();
+
+  let schemaToUse;
+  if (gameName === "Catan") schemaToUse = catanStateSchema;
+  else return NextResponse.json({ error: "Unknown game" }, { status: 400 });
+
+  // const validation = schemaToUse.safeParse(newState);
 
   try {
     const [foundGame] = await db.select().from(game).where(eq(game.name, gameName)).limit(1);
@@ -27,7 +31,7 @@ export async function POST(req) {
 
 
 export async function GET() {
-
+  return NextResponse.json({ loser: true });
 }
 
 

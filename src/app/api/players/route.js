@@ -1,18 +1,24 @@
 import { NextResponse } from 'next/server';
 import { db } from "@/db";
-import { user } from '@/db/schema';
-import { eq, like } from 'drizzle-orm';
+import { matchPlayer } from '@/db/schema';
+import { catanStateSchema } from '@/lib/schema';
+import { eq, and } from 'drizzle-orm';
 
 export async function POST(req) {
-  const {name, colour} = await req.json();
-  if (!name || !colour) {
+  const {matchId, teamName, userId, botId} = await req.json();
+  if (!matchId || !teamName || (!userId && !botId)) {
     return NextResponse.json({ error: 'Did not provide required data' }, { status: 400 });
   }
+  if (userId === botId) return NextResponse.json({ error: 'Exactly one of userId or botId must be sent' }, { status: 422 });
 
   try {
-    await db.insert(user).values({
-      name: name,
-      email: `${name}@${colour}.ca`
+    // team stuff here
+
+    await db.insert(matchPlayer).values({
+      matchId: matchId,
+      botId: botId ?? null,
+      userId: userId ?? null,
+      state: catanStateSchema.toJSONSchema(),
     });
 
     return NextResponse.json({});
@@ -23,52 +29,43 @@ export async function POST(req) {
 }
 
 
-export async function GET() {
+export async function GET(req) {
+  const { searchParams } = req.nextUrl;
   
-  const sampleData = [
-    { name: "Blue (Based)", colour: "#1b63cf" },
-    { name: "Black", colour: "#222222" },
-    { name: "White (Bot)", colour: "#f7f7f7" },
-    { name: "Orange (Grr)", colour: "#db8121" },
-    { name: "Red", colour: "#bf2121" },
-  ];
+  const matchId = searchParams.get("matchId");
+  const teamId = searchParams.get("teamId");
+  const userId = searchParams.get("userId");
+  const botId = searchParams.get("botId");
+  const isWinner = searchParams.get("isWinner");
 
-  return NextResponse.json({ data: sampleData });
+  const conditions = [];
+
+  if (matchId) conditions.push(eq(matchPlayer.matchId, parseInt(matchId)));
+  if (teamId) conditions.push(eq(matchPlayer.teamId, parseInt(teamId)));
+  if (userId) conditions.push(eq(matchPlayer.userId, parseInt(userId)));
+  if (botId) conditions.push(eq(matchPlayer.botId, parseInt(botId)));
+  
+  if (isWinner === "true") conditions.push(eq(matchPlayer.isWinner, true));
+  if (isWinner === "false") conditions.push(eq(matchPlayer.isWinner, false));
+
+  try {
+    let query = db.select().from(matchPlayer);
+
+    if (conditions.length > 0) {
+      query.where(and(...conditions)); 
+    }
+
+    const results = await query;
+
+    return NextResponse.json({ success: true, players: results });
+
+  } catch (e) {
+    console.error("Database Error:", e?.cause?.detail);
+    return NextResponse.json({ error: "Failed to fetch players" }, { status: 500 });
+  }
 }
 
 
 export async function DELETE(req) {
-  let name, colour;
 
-  try {
-    const body = await req.json();
-    name = body.name;
-    colour = body.colour;
-  } catch (err) {}
-
-  try {
-    let condition;
-
-    if (name && colour) {
-      condition = and(
-        eq(user.name, name), 
-        eq(user.email, `${name}@${colour}.ca`)
-      );
-    } else if (name) {
-      condition = eq(user.name, name);
-    } else if (colour) {
-      condition = like(user.email, `%@${colour}.ca`);
-    }
-
-    if (condition) {
-      await db.delete(user).where(condition);
-    } else {
-      await db.delete(user);
-    }
-
-    return NextResponse.json({});
-  } catch (e) {
-    console.error("Database Error:", e);
-    return NextResponse.json({ error: "Failed to delete player(s)" }, { status: 500 });
-  }
 }

@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 
 export async function newUser(name, colour) {
     const res = await fetch('/api/users', {
@@ -11,9 +12,10 @@ export async function newUser(name, colour) {
 }
 
 
-export async function getUser() {
-    const res = await fetch('/api/users');
-    return await res.json();
+export async function getUser(id = null, name = null, role = "users") {
+  if (!id && !name) return await NextResponse.json({ error: "Did not supply id or name" }, { status: 400 }).json();
+  const res = await fetch(`/api/users/${id}`);
+  return await res.json();
 }
 
 

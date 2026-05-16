@@ -15,6 +15,7 @@ export const user = pgTable("user", {
   id: serial().primaryKey(),
   name: text().notNull(),
   email: text().unique().notNull(),
+  hashedPassword: text().notNull(),
   role: rolesEnum().default("user"),
   ...timestamps,
 })
@@ -39,27 +40,22 @@ export const match = pgTable("match", {
   gameId: integer("game_id").references(() => game.id).notNull(),
   numPlayers: integer("num_players").default(0).notNull(),
   status: matchStatusEnum().default("pending").notNull(),
-});
-
-export const team = pgTable("team", {
-  id: serial().primaryKey(),
-  name: varchar({ length: 32 }).unique(),
-  colour: char({ length: 7 }).default("#000000"),
+  ...timestamps,
 });
 
 export const matchPlayer = pgTable("match_player", {
   id: serial().primaryKey(),
   matchId: integer("match_id").references(() => match.id).notNull(),
-  teamId: integer("team_id").references(() => team.id),
-
+  
   botId: integer("bot_id").references(() => bot.id),
   userId: integer("user_id").references(() => user.id),
   
+  colour: char({ length: 7 }).default("#000000").notNull(), 
+  teamIndex: integer("team_index"), // Optional: tells you who is allied
   score: integer().default(0),
   state: jsonb().default({}),
   isWinner: boolean("is_winner").default(false).notNull(),
 }, (table) => [
-  // validates that the player is either a user XOR a bot
   check(
     "participant_type_check",
     sql`(${table.botId} IS NOT NULL AND ${table.userId} IS NULL) OR (${table.botId} IS NULL AND ${table.userId} IS NOT NULL)`

@@ -1,37 +1,36 @@
 import { NextResponse } from 'next/server';
 import { db } from "@/db";
 import { matchPlayer } from '@/db/schema';
-import { catanStateSchema } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 
-export async function POST(req) {
-  const {matchId, teamName, userId, botId} = await req.json();
-  if (!matchId || !teamName || (!userId && !botId)) {
-    return NextResponse.json({ error: 'Did not provide required data' }, { status: 400 });
-  }
-  if (userId === botId) return NextResponse.json({ error: 'Exactly one of userId or botId must be sent' }, { status: 422 });
 
-  try {
-    // team stuff here
+// export async function POST(req) {
+//   const {matchId, teamName, userId, botId} = await req.json();
+//   if (!matchId || !teamName || (!userId && !botId)) {
+//     return NextResponse.json({ error: 'Did not provide required data' }, { status: 400 });
+//   }
+//   if (userId === botId) return NextResponse.json({ error: 'Exactly one of userId or botId must be sent' }, { status: 422 });
 
-    await db.insert(matchPlayer).values({
-      matchId: matchId,
-      botId: botId ?? null,
-      userId: userId ?? null,
-      state: catanStateSchema.toJSONSchema(),
-    });
+//   try {
+//     await db.insert(matchPlayer).values({
+//       matchId: matchId,
+//       botId: botId ?? null,
+//       userId: userId ?? null,
+//       state: catanStateSchema.toJSONSchema(),
+//     });
 
-    return NextResponse.json({});
-  } catch (e) {
-    console.error("Database Error:", e?.cause?.detail);
-    return NextResponse.json({ error: "Failed to insert player" }, { status: 500 });
-  }
-}
+//     return NextResponse.json({});
+//   } catch (e) {
+//     console.error("Database Error:", e?.cause?.detail);
+//     return NextResponse.json({ error: "Failed to insert player" }, { status: 500 });
+//   }
+// }
 
 
 export async function GET(req) {
   const { searchParams } = req.nextUrl;
   
+  const id = searchParams.get("id");
   const matchId = searchParams.get("matchId");
   const teamId = searchParams.get("teamId");
   const userId = searchParams.get("userId");
@@ -40,6 +39,7 @@ export async function GET(req) {
 
   const conditions = [];
 
+  if (id) conditions.push(eq(matchPlayer.id, parseInt(id)));
   if (matchId) conditions.push(eq(matchPlayer.matchId, parseInt(matchId)));
   if (teamId) conditions.push(eq(matchPlayer.teamId, parseInt(teamId)));
   if (userId) conditions.push(eq(matchPlayer.userId, parseInt(userId)));
@@ -52,7 +52,7 @@ export async function GET(req) {
     let query = db.select().from(matchPlayer);
 
     if (conditions.length > 0) {
-      query.where(and(...conditions)); 
+      query.where(and(...conditions));
     }
 
     const results = await query;
@@ -67,5 +67,6 @@ export async function GET(req) {
 
 
 export async function DELETE(req) {
-
+  // verify this is coming from the host or the player themselves
+  return NextResponse.json({ error: "Not Implemented" }, { status: 501 });
 }

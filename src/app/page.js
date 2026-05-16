@@ -4,7 +4,7 @@ import RenderBoard from "./ui/RenderBoard";
 import { newBoard, newSettlementFromClick } from "../lib/hex-board";
 import { Settlement } from "../lib/settlement";
 import { Button } from '@mui/material';
-import { newUser, deleteUser, getUser } from '../lib/users';
+import { newUser, deleteUser, getUsers } from '../lib/users';
 import { newMatch } from '@/lib/match';
 
 const Home = () => {
@@ -29,13 +29,18 @@ const Home = () => {
       });
       console.log(await res.json());
 
-      await deleteUser().then((res) => {console.log(res)});
-      await newUser("Blue (Based)", "#1b63cf");
-      await newUser("Black", "#222222");
-      await newUser("White (Bot)", "#f7f7f7");
-      await newUser("Orange (Grr)", "#db8121");
-      await newUser("Red", "#bf2121");
-      await getUser().then((res) => {console.log(res); setPlayers(res.data)})
+      // 1. new match
+      // 2. add teams
+      // 3. add players
+      // 4. get game state
+
+      // await deleteUser().then((res) => {console.log(res)});
+      // await newUser("Blue (Based)", "#1b63cf");
+      // await newUser("Black", "#222222");
+      // await newUser("White (Bot)", "#f7f7f7");
+      // await newUser("Orange (Grr)", "#db8121");
+      // await newUser("Red", "#bf2121");
+      // await getUsers().then((res) => {console.log(res); setPlayers(res.data)})
     }
     
     initialize();
